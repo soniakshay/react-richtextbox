@@ -1,0 +1,63 @@
+.richtextboxmain {
+    border: 1px solid #877e7e;
+
+}
+.richtextboxheader {
+    display: flex;
+    align-items: center;
+    overflow: auto;
+    padding: 8px 10px;
+}
+.editablecontainarea {
+    overflow-y: auto;
+    outline: 0;
+    border: 0;
+}
+.richtextboxheader .btn {
+    margin-left: 5px;
+    /*border-right: 1px solid #877e7e;;*/
+}
+
+.richtextboxheader .btn button {
+    background: none;
+    outline: none;
+    box-shadow: none;
+    border: 0;
+    position: relative;
+}
+.richtextboxheader  {
+    border-bottom: 1px solid #877e7e;
+}
+
+.textcolorbtn .s0 {fill: #000000}
+.textcolorbtn .s1 {fill: #000000;stroke: #ff0000}
+.addLinkDialog {
+    position: absolute;
+    background: white;
+    border: 1px solid gray;
+    padding: 10px;
+}
+
+.addLinkDialog .rtext {
+    padding: 5px;
+    margin-top: 2px;
+    margin-bottom: 5px;
+}
+.addLinkDialog .btngroup {
+    width: 100%;
+    display: flex;
+    justify-content: right;
+}
+.addLinkDialog .btnAdd {
+        background: dodgerblue !important;
+        border: 1px solid !important;
+        color: white;
+        padding: 5px 10px;
+        margin-left: 5px;
+}
+.addLinkDialog .btnCancel {
+    background: white !important;
+    border: 1px solid !important;
+    color: black;
+    padding: 5px 10px;
+}
