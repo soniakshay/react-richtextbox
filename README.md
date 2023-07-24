@@ -1,4 +1,11 @@
 
+
+#### DEMO
+[Demo react-richtextbox](https://stackblitz.com/edit/stackblitz-starters-pwfnqk?file=src%2FApp.tsx)
+
+
+
+
 ## Install Package
 ```sh
 npm i react-richtextbox
@@ -17,10 +24,13 @@ Easily customize the look and feel of the rich text box to match the design of y
 ##### HTML Content Support:
 The component supports both input and output of content in HTML format, making it compatible with other components that use HTML content.
 
+##### Image Resize:
+The component supports inline image height width using  mouse drag.
 
+###### Example
+![react-richtextbox](https://media.giphy.com/media/nqViEnQtE2ctUNP5jm/giphy.gif)
 
-
-Following toolbar config are default and optional 
+Following toolbar config are default and optional
 ```jsx static
  const defaultoolbarConfig =  [
     'UNDO',
@@ -54,7 +64,7 @@ const onChange = (htmlData) => {
     console.log(htmlData)
 }
 
- const toolbarConfig =  [
+const toolbarConfig =  [
     'UNDO',
     'REDO',
     'BOLD',
@@ -69,18 +79,18 @@ const onChange = (htmlData) => {
 ];
 
 function App() {
-  return (
-      <>
-      <Richtextbox
-        height={250} // optional
-        width={600} // optional
-        initialValue={`<h1>react-richtextbox<h1/>`} // optional
-        toolbarConfig={toolbarConfig} // optional
-        onChange={onChange} //optional
-        />
-    </>
+    return (
+        <>
+            <Richtextbox
+                height={250} // optional
+                width={600} // optional
+                initialValue={`<h1>react-richtextbox<h1/>`} // optional
+                toolbarConfig={toolbarConfig} // optional
+                onChange={onChange} //optional
+            />
+        </>
 
-  );
+    );
 }
 
 export default App;

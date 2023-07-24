@@ -1,6 +1,6 @@
 {
   "name": "react-richtextbox",
-  "version": "1.0.12",
+  "version": "1.0.15",
   "description": "",
   "main": "./build/index.js",
   "scripts": {
