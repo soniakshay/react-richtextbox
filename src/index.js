@@ -2,7 +2,7 @@ import React,{useRef, useState} from "react";
 import {useEffect} from "react";
 import './style.css'
 
-const defaultToolbarConfig =  [
+ const defaultToolbarConfig =  [
     'UNDO',
     'REDO',
     'BOLD',
@@ -23,16 +23,21 @@ const defaultToolbarConfig =  [
 
 ];
 
-function Richtextbox({height = 250, width = 600, toolbarConfig = defaultToolbarConfig ,onChange= null}){
+function Richtextbox({height = 250, width = 600, toolbarConfig = defaultToolbarConfig ,onChange= null, initialValue = null}){
 
 
-
+    let originalWidth, originalHeight;
+    let originalX, originalY;
     const contentEditableRef = useRef(null);
-    const targetRef = useRef(null);
-    const [headerHeight,setHeaderHeight] =  useState(null)
+     const [headerHeight,setHeaderHeight] =  useState(null)
 
-    const [isOpen,setOpen] = useState(false)
+    // const [isOpen,setOpen] = useState(false)
+    //
 
+    const targetRef =  useRef(null)
+    const targetRef1 =  useRef(null)
+    const [isOpenUrlDialog,setOpenUrlDialog] = useState(false)
+    const [isOpenImageUrlDialog,setOpenImageUrlDialog] = useState(false)
     const useClickOutside = (ref, callback) => {
         const handleClickOutside = (event) => {
             if (ref.current && !ref.current.contains(event.target)) {
@@ -49,69 +54,65 @@ function Richtextbox({height = 250, width = 600, toolbarConfig = defaultToolbarC
     };
 
     useClickOutside(targetRef, () => {
-        setOpen(false);
+        setOpenUrlDialog(false);
+    });
+    useClickOutside(targetRef1, () => {
+        setOpenImageUrlDialog(false);
     });
     function applyFormatting(command) {
         document.execCommand(command, false, null);
     }
 
-    function insertHyperlink() {
-        var selectedText = window.getSelection().toString();
-        if (selectedText) {
-            var url = prompt("Enter the URL:");
 
-            document.execCommand('createLink', false, url);
-        } else {
-            alert('Please Select Text')
-        }
+    function insertHyperlink(e) {
+        e.preventDefault();
 
+
+        let editableDiv = document.getElementById('editablecontainarea');
+        let hyperlinkText = e.target[1].value;
+        let hyperlinkURL = e.target[0].value;
+
+        let hyperlink = document.createElement('a');
+        hyperlink.href = hyperlinkURL;
+        hyperlink.textContent = hyperlinkText;
+        editableDiv.appendChild(hyperlink);
+      setOpenUrlDialog(false);
     }
 
-    function insertImage() {
-        var imgSrc = prompt("Enter the URL:");
 
+
+    function insertImage(e) {
+        e.preventDefault();
+        let imgSrc = e.target[0].value;
         if(imgSrc && imgSrc.trim()) {
-            var confirmationAuto  = window.confirm("Image Size Auto")
-            if(confirmationAuto) {
-                var imgElement = `<img src=${imgSrc}>`;
-                document.execCommand('insertHTML', false, imgElement);
-            } else {
-                var height = prompt("Height:");
-                var width = prompt("Width");
-                var imgElement = `<img src=${imgSrc} height=${height} width=${width}>`;
-                document.execCommand('insertHTML', false, imgElement);
-            }
+            document.getElementById('editablecontainarea').focus();
+            let imgElement = `<img src=${imgSrc} id='image-${generateString(5)}' class="rte-image">`;
+            document.execCommand('insertHTML', false, imgElement);
 
         }
 
+        setOpenImageUrlDialog(false)
 
     }
     function changeTextColor(e) {
+        const ele =  document.querySelector('.richtextboxheader .textcolorbtn .s1');
+
+       if(ele) {
+           ele.style.stroke = e.target.value;
+       }
         document.execCommand('foreColor', false, e.target.value);
     }
 
     function changeTextBackgroundColor(e) {
+        const ele =  document.querySelector('.richtextboxheader .textbgbtn .s2');
+
+        if(ele) {
+            ele.style.stroke = e.target.value;
+        }
         document.execCommand('hiliteColor', false, e.target.value);
     }
-    function onChangeFontSize(e) {
-        document.execCommand('fontSize', false, `${e.target.value}`);
-    }
-    const renderOption = (val) => {
 
-        // if(val === 'FONTSIZE') {
-        //     return  (
-        //         <>
-        //             <label>Font Size: </label>
-        //         <select onChange={onChangeFontSize} >
-        //            <option onClick={onChangeFontSize} value={'10pt'}>10pt</option>
-        //             <option onClick={onChangeFontSize} value={'20pt'}>20pt</option>
-        //             <option onClick={onChangeFontSize} value={'50pt'}>50pt</option>
-        //             <option onClick={onChangeFontSize} value={'100pt'}>1000pt</option>
-        //
-        //         </select>
-        //         </>
-        //     )
-        // }
+    const renderOption = (val) => {
         if(val === 'STRICKTHROUGH') {
             return (
                 <button title={'Strikethrough'} onClick={() => {
@@ -239,14 +240,41 @@ function Richtextbox({height = 250, width = 600, toolbarConfig = defaultToolbarC
         if(val === 'HYPERLINK') {
             return (
                 <>
-                    <button title={'Add Link'}  onClick={() => {
+                <button title={'Add Link'}  onClick={() => {
+                    setOpenUrlDialog(true)
+                }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512">
+                        <path d="M579.8 267.7c56.5-56.5 56.5-148 0-204.5c-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6c31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0c-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0L579.8 267.7zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5c50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5L217.7 177.2c31.5-31.5 82.5-31.5 114 0c27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z"/>
+                    </svg>
 
-                        insertHyperlink()
-                    }}>
-                        <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512">
-                            <path d="M579.8 267.7c56.5-56.5 56.5-148 0-204.5c-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6c31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0c-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0L579.8 267.7zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5c50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5L217.7 177.2c31.5-31.5 82.5-31.5 114 0c27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z"/></svg>
 
-                    </button>
+
+
+                </button>
+                    {
+                        isOpenUrlDialog ?  (
+                            <div  ref={targetRef}  className={'addLinkDialog'}>
+                                <form onSubmit={insertHyperlink}>
+                                    <div className={'rtextInputDiv'}>
+                                        <input type={'url'} className={'rtext'} name={'url'} placeholder={'Url'} required={true}/>
+
+                                    </div>
+                                    <div className={'rtextInputDiv'}>
+                                        <input type={'text'} className={'rtext'} name={'text'} placeholder={'Display Text'} required={true}/>
+                                    </div>
+
+                                    <div className={'rtextInputDiv rtextButton'}>
+                                        <button className={'btn btnCancel'} onClick={() => setOpenUrlDialog(false)}>Cancel</button>
+                                        <button  type={'submit'} className={'btn btnAdd'}> Add</button>
+                                    </div>
+
+
+
+                                </form>
+
+                            </div>
+                        ) : ''
+                    }
 
                 </>
 
@@ -254,14 +282,41 @@ function Richtextbox({height = 250, width = 600, toolbarConfig = defaultToolbarC
         }
         if(val === 'IMAGE') {
             return (
-
+            <>
                 <button title={'Add Image'}  onClick={() => {
-                    insertImage()
+                    setOpenImageUrlDialog(true)
                 }}>
                     <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512">
                         <path d="M0 96C0 60.7 28.7 32 64 32H448c35.3 0 64 28.7 64 64V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96zM323.8 202.5c-4.5-6.6-11.9-10.5-19.8-10.5s-15.4 3.9-19.8 10.5l-87 127.6L170.7 297c-4.6-5.7-11.5-9-18.7-9s-14.2 3.3-18.7 9l-64 80c-5.8 7.2-6.9 17.1-2.9 25.4s12.4 13.6 21.6 13.6h96 32H424c8.9 0 17.1-4.9 21.2-12.8s3.6-17.4-1.4-24.7l-120-176zM112 192a48 48 0 1 0 0-96 48 48 0 1 0 0 96z"/></svg>
 
                 </button>
+
+                {
+                    isOpenImageUrlDialog ? (
+                        <div  ref={targetRef1}  className={'addLinkDialog'}>
+                            <form onSubmit={insertImage}>
+                                <div className={'rtextInputDiv'}>
+                                    <input type={'url'} className={'rtext'} name={'url'} placeholder={'Url'} required={true}/>
+
+                                </div>
+
+
+                                <div className={'rtextInputDiv rtextButton'}>
+                                    <button className={'btn btnCancel'} onClick={() => setOpenImageUrlDialog(false)}>Cancel</button>
+                                    <button  type={'submit'} className={'btn btnAdd'}> Add</button>
+                                </div>
+
+
+
+                            </form>
+                        </div>
+
+                    ) :''
+
+                }
+
+
+            </>
 
 
             )
@@ -278,12 +333,12 @@ function Richtextbox({height = 250, width = 600, toolbarConfig = defaultToolbarC
                         <svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBox="0 0 19 20" width="19"
                              height="20">
 
-                            <path id="Layer" fill-rule="evenodd" className="s0"
+                            <path id="Layer" fillRule="evenodd" className="s0"
                                   d="m14.5 12.7h0.8c0.6 0 1 0.4 1 0.9 0 0.6-0.4 1-1 1h-2.9c-0.5 0-1-0.4-1-1 0-0.5 0.5-0.9 1-0.9h0.1l-0.6-1.5h-4.8l-0.6 1.5h0.1c0.5 0 1 0.4 1 0.9 0 0.6-0.5 1-1 1h-2.9c-0.6 0-1-0.4-1-1 0-0.5 0.4-0.9 1-0.9h0.8l4.1-11.1c0.1-0.3 0.5-0.6 0.9-0.6 0.4 0 0.8 0.3 0.9 0.6zm-5-7.9l-1.7 4.5h3.4z"/>
                             <path id="Layer 1" className="s1" d="m1 16.4h17v1.5h-17z"/>
                             <path id="Shape 1" className="s1" d="m65 5h100v100h-100z"/>
                         </svg>
-                        <input type="color"  id={"textColor"}  onChange={changeTextColor} style={{visibility: "hidden",
+                        <input type="color" value={'#FFFFF'}  id={"textColor"}  onChange={changeTextColor} style={{visibility: "hidden",
                             height:'0px',
                             width:'0px',
                         }} />
@@ -295,25 +350,31 @@ function Richtextbox({height = 250, width = 600, toolbarConfig = defaultToolbarC
         }
         if(val === 'TEXTBACKGROUNDCOLOR') {
             return (
-                <>
+    <>
 
-                    <button  title={'Font Background color'} onClick={() => {
-                        if(document.getElementById('textBgColor')) {
-                            document.getElementById('textBgColor').click()
+        <button  className={'textbgbtn'} title={'Font Background color'} onClick={() => {
+            if(document.getElementById('textBgColor')) {
+                document.getElementById('textBgColor').click()
 
-                        }
-                    }}>
-                        <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 576 512">
-                            <path d="M315 315l158.4-215L444.1 70.6 229 229 315 315zm-187 5l0 0V248.3c0-15.3 7.2-29.6 19.5-38.6L420.6 8.4C428 2.9 437 0 446.2 0c11.4 0 22.4 4.5 30.5 12.6l54.8 54.8c8.1 8.1 12.6 19 12.6 30.5c0 9.2-2.9 18.2-8.4 25.6L334.4 396.5c-9 12.3-23.4 19.5-38.6 19.5H224l-25.4 25.4c-12.5 12.5-32.8 12.5-45.3 0l-50.7-50.7c-12.5-12.5-12.5-32.8 0-45.3L128 320zM7 466.3l63-63 70.6 70.6-31 31c-4.5 4.5-10.6 7-17 7H24c-13.3 0-24-10.7-24-24v-4.7c0-6.4 2.5-12.5 7-17z"/></svg>
-                        <input type="color"  id={"textBgColor"} onChange={changeTextBackgroundColor}  style={{visibility: "hidden",
-                            height:'0px',
-                            width:'0px',
-                        }} />
+            }
+        }}>
+            <svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBox="0 0 19 20" width="19" height="20">
 
-                    </button>
+                <path id="Layer" fillRule="evenodd" className="s0"
+                      d="m5.5 10.7l0.1-1.9c0-0.5 0.2-0.8 0.5-1.1l7.5-5.5q0.3-0.2 0.7-0.2c0.3 0 0.6 0.1 0.9 0.4l1.5 1.5c0.2 0.2 0.3 0.5 0.3 0.8q0 0.4-0.2 0.7l-5.6 7.5c-0.3 0.3-0.7 0.5-1.1 0.5h-1.9l-0.7 0.7c-0.4 0.3-0.9 0.3-1.3 0l-1.4-1.4c-0.3-0.4-0.3-0.9 0-1.3zm5.2-0.1l4.4-5.9-0.8-0.8-6 4.3zm-8.5 4.2l1.8-1.8 1.9 2-0.8 0.8q-0.2 0.2-0.5 0.2h-1.9c-0.4 0-0.7-0.3-0.6-0.7v-0.1q0-0.3 0.1-0.5z"/>
+                <path id="Shape 1" className="s1" d="m65 5h100v100h-100z"/>
+                <path id="Shape 2" className="s2" d="m1 17h17v2h-17z"/>
+            </svg>
+            <input type="color" value={'#FFFFF'}   id={"textBgColor"} onChange={changeTextBackgroundColor}  style={{
+                visibility: "hidden",
+                height:'0px',
+                width:'0px',
+            }} />
+
+        </button>
 
 
-                </>
+    </>
 
 
             )
@@ -352,6 +413,16 @@ function Richtextbox({height = 250, width = 600, toolbarConfig = defaultToolbarC
 
     }
 
+    function generateString(length) {
+        let result = ' ';
+        const charactersLength = characters.length;
+        for ( let i = 0; i < length; i++ ) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+
+        return result;
+    }
+
 
     useEffect(() => {
         if(document.getElementById('richtextboxheader')) {
@@ -359,7 +430,61 @@ function Richtextbox({height = 250, width = 600, toolbarConfig = defaultToolbarC
             setHeaderHeight(offsetHeight)
 
         }
+
+
+
+
+
+
     },[])
+
+    useEffect(() => {
+
+
+        document.addEventListener('mousedown',(e) => {
+            const isCheckImage = e.target.id.split('-')[0];
+            if(isCheckImage === 'image') {
+                originalWidth = e.target.clientWidth;
+                originalHeight = e.target.clientHeight;
+                originalX = e.clientX;
+                originalY = e.clientY;
+                e.target.classList.add("selected");
+            } else {
+                const element =  document.querySelectorAll('.editablecontainarea img');
+                for(let i=0; i <element.length; i++)
+                {
+                    element[i].classList.remove('selected')
+                }
+            }
+        });
+
+        document.addEventListener('mousemove',(e) => {
+            const isCheckImage = e.target.id.split('-')[0];
+            if(isCheckImage === 'image') {
+                const ischeckSelected =  e.target.classList.contains('selected')
+                    if(ischeckSelected) {
+                        const newWidth = originalWidth + (e.clientX - originalX);
+                        const newHeight = originalHeight + (e.clientY - originalY);
+
+                        e.target.style.width = `${newWidth}px`;
+                        e.target.style.height = `${newHeight}px`;
+
+
+                    }
+            }
+
+        });
+        document.addEventListener('mouseup',(e) => {
+            const element =  document.querySelectorAll('.editablecontainarea img');
+            for(let i=0; i <element.length; i++)
+            {
+                element[i].classList.remove('selected')
+            }
+        })
+    },[])
+    const characters ='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+
     return (
 
 
@@ -392,18 +517,45 @@ function Richtextbox({height = 250, width = 600, toolbarConfig = defaultToolbarC
                          ref={contentEditableRef}
                          className={'editablecontainarea'}
 
+                            dangerouslySetInnerHTML={{__html: initialValue}}
+                          style={{
+                              height: (height - headerHeight) + 'px',
+                              width: width + 'px'
 
-                         style={{
-                             height: (height - headerHeight) + 'px',
-                             width: width + 'px'
+                          }}
+
+                          contentEditable={true}
+                         onPaste={(e) => {
+                             setTimeout(() => {
+
+                                 if(!toolbarConfig.includes('IMAGE')) {
+                                     const element =  document.querySelectorAll('.editablecontainarea img');
+                                     for(let i=0; i <element.length; i++)
+                                     {
+                                         element[i].remove()
+
+
+                                     }
+                                 }
+                                 const element =  document.querySelectorAll('.editablecontainarea img');
+                                 for(let i=0; i <element.length; i++)
+                                 {
+                                     element[i].classList.add('rte-image')
+                                     element[i].id= `image-${generateString(5)}`
+
+                                 }
+                             },10)
+
+
 
                          }}
-                         contentEditable={true}
                          onInput={() =>{
-                             if(onChange) {
+                             if(contentEditableRef.current) {
                                  const contentEditableDiv = contentEditableRef.current;
                                  const htmlContent = contentEditableDiv.innerHTML;
-                                 onChange(htmlContent)
+                                 if(onChange) {
+                                     onChange(htmlContent)
+                                 }
 
                              }
 

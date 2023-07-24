@@ -29,15 +29,29 @@
     border-bottom: 1px solid #877e7e;
 }
 
-.textcolorbtn .s0 {fill: #000000}
-.textcolorbtn .s1 {fill: #000000;stroke: #ff0000}
+/*.textcolorbtn .s0 {fill: #000000}*/
+.textcolorbtn .s1 {fill: #000000;}
+.textbgbtn .s0 {fill: #000000}
+
+
+
 .addLinkDialog {
     position: absolute;
     background: white;
     border: 1px solid gray;
     padding: 10px;
+    margin-right: 90px;
+    box-shadow: 0px 7px 17px -8px;
 }
 
+.addLinkDialog .rtextInputDiv {
+    width: 100%;
+}
+
+.addLinkDialog .rtextButton {
+    display: flex;
+    justify-content: right;
+}
 .addLinkDialog .rtext {
     padding: 5px;
     margin-top: 2px;
@@ -47,6 +61,9 @@
     width: 100%;
     display: flex;
     justify-content: right;
+}
+.addLinkDialog .btn {
+    cursor: pointer;
 }
 .addLinkDialog .btnAdd {
         background: dodgerblue !important;
@@ -61,3 +78,15 @@
     color: black;
     padding: 5px 10px;
 }
+.rte-image.selected{
+    border: 1px dashed dodgerblue;
+    padding: 1px;
+    cursor: nwse-resize;
+    user-drag: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+

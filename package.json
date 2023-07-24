@@ -1,6 +1,6 @@
 {
   "name": "react-richtextbox",
-  "version": "1.0.7",
+  "version": "1.0.12",
   "description": "",
   "main": "./build/index.js",
   "scripts": {
@@ -9,10 +9,18 @@
   "author": "soniakshay",
   "license": "ISC",
   "repository": {
-    "type": "git"
+    "type": "git",
+    "url": "https://github.com/soniakshay/react-richtextbox"
   },
   "keywords": [
     "react",
+    "react-richtext-box",
+    "richtextbox",
+    "react-richtext-editor",
+    "reactrichtexteditor",
+    "richtexteditor",
+    "reactrichtextbox",
+    "richtextbox",
     "akshay",
     "akshay-dholakiya",
     "akshay dholakiya"
