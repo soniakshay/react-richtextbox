@@ -36,7 +36,7 @@
     "webpack-cli": "^3.3.10"
   },
   "dependencies": {
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "react": "^18.2.0",
     "sass-loader": "^7.2.0"
   }
